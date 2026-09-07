@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       # Los servidores de GitHub ya traen el SDK de Android instalado de
       # fábrica — por eso este flujo funciona sin configurar nada más.
