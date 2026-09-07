@@ -1,0 +1,62 @@
+name: Compilar APK de Prevenglobal
+
+# Se puede lanzar manualmente desde la pestaña "Actions" de GitHub
+# (botón "Run workflow"), o automáticamente cada vez que subas un
+# cambio a la rama "main".
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  compilar-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Preparar Java (necesario para compilar Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Los servidores de GitHub ya traen el SDK de Android instalado de
+      # fábrica — por eso este flujo funciona sin configurar nada más.
+      - name: Instalar las dependencias del proyecto
+        run: npm install
+
+      - name: Sincronizar Capacitor con el proyecto Android
+        run: npx cap sync android
+
+      - name: Dar permiso de ejecución a Gradle
+        run: chmod +x android/gradlew
+
+      - name: Compilar el APK (versión de instalación directa)
+        run: cd android && ./gradlew assembleDebug
+
+      - name: Dejar el APK disponible para descargar (artefacto del run)
+        uses: actions/upload-artifact@v4
+        with:
+          name: prevenglobal-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      # Además del artefacto (que expira con el tiempo), esto crea un
+      # "Release" con el .apk adjunto — un enlace fijo y permanente que
+      # se puede compartir directamente con los técnicos.
+      - name: Renombrar el APK con la fecha de esta compilación
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk prevenglobal-${{ github.run_number }}.apk
+
+      - name: Publicar como Release de GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Prevenglobal APK — compilación #${{ github.run_number }}
+          files: prevenglobal-${{ github.run_number }}.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

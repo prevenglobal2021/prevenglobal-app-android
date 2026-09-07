@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Prevenglobal</string>
+    <string name="title_activity_main">Prevenglobal</string>
+    <string name="package_name">com.prevenglobal.app</string>
+    <string name="custom_url_scheme">com.prevenglobal.app</string>
+</resources>
