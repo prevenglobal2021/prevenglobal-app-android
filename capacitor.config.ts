@@ -5,7 +5,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
   plataforma en el navegador del computador. Cualquier cambio subido al
   servidor se refleja aquí de inmediato, sin recompilar el .apk.
 */
-const URL_BACKEND_PRODUCCION = 'https://prevenglobal-backend-production.up.railway.app';
+const URL_BACKEND_PRODUCCION = 'https://prevenglobal.up.railway.app';
 
 const config: CapacitorConfig = {
   appId: 'com.prevenglobal.app',
