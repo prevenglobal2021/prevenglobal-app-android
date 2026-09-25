@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <!-- Paleta de marca de Prevenglobal, tomada del logo (oso "Pedroso") -->
+    <color name="colorPrimary">#1E3A5F</color>       <!-- azul marino -->
+    <color name="colorPrimaryDark">#15293F</color>    <!-- azul marino, más oscuro, para la barra de estado -->
+    <color name="colorAccent">#E8791A</color>         <!-- naranja, para botones/resaltados -->
+</resources>
