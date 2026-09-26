@@ -1,0 +1,59 @@
+
+{
+
+  "project_info": {
+
+    "project_number": "787813632249",
+
+    "project_id": "prevenglobal-78126",
+
+    "storage_bucket": "prevenglobal-78126.firebasestorage.app"
+
+  },
+
+  "client": [
+
+    {
+
+      "client_info": {
+
+        "mobilesdk_app_id": "1:787813632249:android:0a5c88beb6286aaf78ba28",
+
+        "android_client_info": {
+
+          "package_name": "com.prevenglobal.app"
+
+        }
+
+      },
+
+      "oauth_client": [],
+
+      "api_key": [
+
+        {
+
+          "current_key": "AIzaSyDd8Xy2DlAgYD8EJOk99ta9zUlfFVBuC2k"
+
+        }
+
+      ],
+
+      "services": {
+
+        "appinvite_service": {
+
+          "other_platform_oauth_client": []
+
+        }
+
+      }
+
+    }
+
+  ],
+
+  "configuration_version": "1"
+
+}
+
