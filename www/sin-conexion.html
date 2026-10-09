@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prevenglobal — Sin conexión</title>
+<style>
+  :root { --azul: #1E3A5F; --azul-osc: #15293F; --naranja: #E8791A; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(160deg, var(--azul) 0%, var(--azul-osc) 100%);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    padding: calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
+    text-align: center;
+  }
+  .caja { max-width: 340px; width: 100%; }
+  .logo {
+    width: 116px; height: 116px; margin: 0 auto 22px;
+    border-radius: 50%; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  }
+  .logo svg { width: 56px; height: 56px; }
+  h1 { font-size: 22px; margin: 0 0 10px; font-weight: 700; }
+  p { font-size: 15px; line-height: 1.5; margin: 0 0 26px; color: rgba(255,255,255,.85); }
+  button {
+    width: 100%; border: 0; border-radius: 12px; padding: 15px 18px;
+    background: var(--naranja); color: #fff; font-size: 16px; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(232,121,26,.35);
+  }
+  button:active { transform: scale(.98); }
+  button[disabled] { opacity: .7; }
+  .nota { margin-top: 16px; font-size: 13px; color: rgba(255,255,255,.6); }
+</style>
+</head>
+<body>
+  <div class="caja">
+    <div class="logo" aria-hidden="true">
+      <!-- Ícono de "sin señal" -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1E3A5F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 8.8a15 15 0 0 1 4.2-2.6"/><path d="M9.6 5.3A15 15 0 0 1 22 8.8"/>
+        <path d="M5 12.6a10 10 0 0 1 3.2-2"/><path d="M13.5 10.2A10 10 0 0 1 19 12.6"/>
+        <path d="M8.5 16.3a5 5 0 0 1 7 0"/><circle cx="12" cy="20" r="1"/>
+        <path d="M3 3l18 18" stroke="#E8791A"/>
+      </svg>
+    </div>
+    <h1>Sin conexión</h1>
+    <p>No pudimos abrir Prevenglobal. Revisa que tengas internet (wifi o datos). Si tu internet funciona, el servidor puede estar en mantenimiento: intenta de nuevo en un momento.</p>
+    <button id="reintentar" type="button">Reintentar</button>
+    <div class="nota" id="nota">Se reintentará solo cuando vuelva la conexión.</div>
+  </div>
+<script>
+  var URL_PLATAFORMA = 'https://prevenglobal.com';
+  var boton = document.getElementById('reintentar');
+  function reintentar() {
+    boton.disabled = true;
+    boton.textContent = 'Conectando…';
+    window.location.replace(URL_PLATAFORMA);
+    // Si no cargó, se vuelve a habilitar el botón.
+    setTimeout(function () { boton.disabled = false; boton.textContent = 'Reintentar'; }, 8000);
+  }
+  boton.addEventListener('click', reintentar);
+  window.addEventListener('online', reintentar);
+</script>
+</body>
+</html>

@@ -4,4 +4,6 @@
     <color name="colorPrimary">#1E3A5F</color>       <!-- azul marino -->
     <color name="colorPrimaryDark">#15293F</color>    <!-- azul marino, más oscuro, para la barra de estado -->
     <color name="colorAccent">#E8791A</color>         <!-- naranja, para botones/resaltados -->
+    <color name="splashFondo">#1E3A5F</color>         <!-- fondo de la pantalla de inicio -->
+    <color name="splashCirculoLogo">#FFFFFF</color>   <!-- círculo blanco detrás del logo (Android 12+) -->
 </resources>
