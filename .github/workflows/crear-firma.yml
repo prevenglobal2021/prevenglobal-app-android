@@ -1,0 +1,39 @@
+name: Crear firma fija de la app (una sola vez)
+
+# Se corre UNA vez a mano. Crea la llave con la que se firmarán todas las
+# versiones de la app y la deja como archivo descargable por 1 día, para
+# copiarla a los secretos FIRMA_APP y FIRMA_CLAVE del repositorio
+# (Settings → Secrets and variables → Actions). La llave nunca queda en el
+# código. Si ya existe el secreto FIRMA_APP, NO hay que volver a correrlo:
+# una llave nueva obligaría a desinstalar la app en todos los celulares.
+on:
+  workflow_dispatch:
+
+jobs:
+  crear-firma:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preparar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Crear la llave
+        run: |
+          CLAVE=$(openssl rand -hex 16)
+          keytool -genkeypair -keystore firma.keystore -storepass "$CLAVE" -keypass "$CLAVE" \
+            -alias prevenglobal -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Prevenglobal, O=Prevenglobal, C=CO"
+          mkdir salida
+          base64 -w0 firma.keystore > salida/FIRMA_APP.txt
+          printf '%s' "$CLAVE" > salida/FIRMA_CLAVE.txt
+          cp firma.keystore salida/respaldo-firma.keystore
+          printf 'Copia el contenido de FIRMA_APP.txt al secreto FIRMA_APP y el de FIRMA_CLAVE.txt al secreto FIRMA_CLAVE.\nGuarda respaldo-firma.keystore y FIRMA_CLAVE.txt en un lugar seguro: si se pierden, los celulares tendrian que desinstalar la app para recibir la siguiente version.\n' > salida/LEEME.txt
+
+      - name: Dejar la llave para descargar (1 día)
+        uses: actions/upload-artifact@v4
+        with:
+          name: firma-prevenglobal
+          path: salida/
+          retention-days: 1

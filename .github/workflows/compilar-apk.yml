@@ -37,7 +37,33 @@ jobs:
       - name: Dar permiso de ejecución a Gradle
         run: chmod +x android/gradlew
 
+      # Número de versión automático: cada compilación sube sola (100 + número
+      # de compilación), así la app sabe que hay una más nueva sin tocar nada.
+      - name: Poner el número de versión automático
+        run: |
+          CODIGO=$((100 + ${{ github.run_number }}))
+          sed -i "s/versionCode [0-9]*/versionCode $CODIGO/" android/app/build.gradle
+          NOMBRE=$(grep -o 'versionName "[^"]*"' android/app/build.gradle | cut -d'"' -f2)
+          echo "VERSION_CODE=$CODIGO" >> $GITHUB_ENV
+          echo "VERSION_NAME=$NOMBRE" >> $GITHUB_ENV
+
+      # Llave de firma fija (secretos FIRMA_APP y FIRMA_CLAVE en Settings →
+      # Secrets and variables → Actions). Si no están, se compila igual que antes.
+      - name: Preparar la firma fija
+        env:
+          FIRMA_APP: ${{ secrets.FIRMA_APP }}
+        run: |
+          if [ -n "$FIRMA_APP" ]; then
+            echo "$FIRMA_APP" | base64 -d > "$RUNNER_TEMP/firma.keystore"
+            echo "FIRMA_ARCHIVO=$RUNNER_TEMP/firma.keystore" >> $GITHUB_ENV
+            echo "Firma fija lista."
+          else
+            echo "::warning::Sin firma fija (falta el secreto FIRMA_APP): esta versión no se podrá instalar encima de otra."
+          fi
+
       - name: Compilar el APK (versión de instalación directa)
+        env:
+          FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
         run: cd android && ./gradlew assembleDebug
 
       - name: Dejar el APK disponible para descargar (artefacto del run)
@@ -57,6 +83,8 @@ jobs:
         with:
           tag_name: build-${{ github.run_number }}
           name: Prevenglobal APK — compilación #${{ github.run_number }}
+          # La plataforma lee esta línea para avisar en la app que hay versión nueva.
+          body: "versionCode=${{ env.VERSION_CODE }} versionName=${{ env.VERSION_NAME }}"
           files: prevenglobal-${{ github.run_number }}.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

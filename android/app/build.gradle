@@ -16,7 +16,27 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Firma fija: si GitHub trae la llave de firma (secreto FIRMA_APP), todas
+    // las compilaciones salen con la MISMA firma y cada versión nueva se
+    // instala encima de la anterior. Sin esa llave se usa la firma de prueba
+    // de cada compilación (y Android pide desinstalar para actualizar).
+    // La llave NUNCA se guarda en el repositorio: llega por variables.
+    def firmaArchivo = System.getenv('FIRMA_ARCHIVO')
+    def hayFirma = firmaArchivo && file(firmaArchivo).exists()
+    signingConfigs {
+        if (hayFirma) {
+            prevenglobal {
+                storeFile file(firmaArchivo)
+                storePassword System.getenv('FIRMA_CLAVE')
+                keyAlias System.getenv('FIRMA_ALIAS') ?: 'prevenglobal'
+                keyPassword System.getenv('FIRMA_CLAVE')
+            }
+        }
+    }
     buildTypes {
+        debug {
+            if (hayFirma) signingConfig signingConfigs.prevenglobal
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
