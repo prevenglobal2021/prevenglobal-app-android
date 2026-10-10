@@ -27,9 +27,9 @@ android {
         if (hayFirma) {
             prevenglobal {
                 storeFile file(firmaArchivo)
-                storePassword System.getenv('FIRMA_CLAVE')
+                storePassword System.getenv('FIRMA_CLAVE')?.trim()
                 keyAlias System.getenv('FIRMA_ALIAS') ?: 'prevenglobal'
-                keyPassword System.getenv('FIRMA_CLAVE')
+                keyPassword System.getenv('FIRMA_CLAVE')?.trim()
             }
         }
     }
