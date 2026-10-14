@@ -39,11 +39,17 @@ jobs:
 
       # Número de versión automático: cada compilación sube sola (100 + número
       # de compilación), así la app sabe que hay una más nueva sin tocar nada.
+      # El nombre visible también sube solo: los dos primeros números salen de
+      # build.gradle (p. ej. 1.2) y el último es el número de compilación
+      # (1.2.57, 1.2.58...). Es el que se ve en el login y dentro de la app.
       - name: Poner el número de versión automático
         run: |
           CODIGO=$((100 + ${{ github.run_number }}))
           sed -i "s/versionCode [0-9]*/versionCode $CODIGO/" android/app/build.gradle
-          NOMBRE=$(grep -o 'versionName "[^"]*"' android/app/build.gradle | cut -d'"' -f2)
+          BASE=$(grep -o 'versionName "[^"]*"' android/app/build.gradle | cut -d'"' -f2 | cut -d. -f1-2)
+          NOMBRE="$BASE.${{ github.run_number }}"
+          sed -i "s/versionName \"[^\"]*\"/versionName \"$NOMBRE\"/" android/app/build.gradle
+          grep -n 'versionCode\|versionName' android/app/build.gradle
           echo "VERSION_CODE=$CODIGO" >> $GITHUB_ENV
           echo "VERSION_NAME=$NOMBRE" >> $GITHUB_ENV
 
