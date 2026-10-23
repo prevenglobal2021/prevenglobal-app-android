@@ -18,7 +18,8 @@
     "@capacitor/push-notifications": "^8.1.2",
     "@capacitor/share": "^8.0.1",
     "@capacitor/splash-screen": "^8.0.2",
-    "@capgo/capacitor-native-biometric": "8.6.11"
+    "@capgo/capacitor-native-biometric": "8.6.11",
+    "@capgo/capacitor-speech-recognition": "8.4.4"
   },
   "devDependencies": {
     "typescript": "^7.0.2"
