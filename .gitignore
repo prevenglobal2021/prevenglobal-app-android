@@ -5,3 +5,13 @@ android/.gradle/
 android/local.properties
 *.log
 .DS_Store
+
+# Llaves de firma y claves: nunca deben subirse (el repositorio es público)
+*.keystore
+*.jks
+*.pem
+*.key
+*.p12
+.env
+.env.*
+FIRMA_*.txt

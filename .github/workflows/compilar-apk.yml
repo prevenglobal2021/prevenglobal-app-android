@@ -8,6 +8,11 @@ on:
   push:
     branches: [ main ]
 
+# Permisos mínimos: el flujo solo necesita leer el código y publicar el
+# Release con el .apk. Nada más (por seguridad, el repositorio es público).
+permissions:
+  contents: write
+
 jobs:
   compilar-apk:
     runs-on: ubuntu-latest
