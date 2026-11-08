@@ -57,6 +57,13 @@ jobs:
           grep -n 'versionCode\|versionName' android/app/build.gradle
           echo "VERSION_CODE=$CODIGO" >> $GITHUB_ENV
           echo "VERSION_NAME=$NOMBRE" >> $GITHUB_ENV
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "ETIQUETA=build-${{ github.run_number }}" >> $GITHUB_ENV
+            echo "TITULO=Prevenglobal APK — compilación #${{ github.run_number }}" >> $GITHUB_ENV
+          else
+            echo "ETIQUETA=prueba-${{ github.run_number }}" >> $GITHUB_ENV
+            echo "TITULO=PRUEBA Prevenglobal APK — compilación #${{ github.run_number }}" >> $GITHUB_ENV
+          fi
 
       # Llave de firma fija (secretos FIRMA_APP y FIRMA_CLAVE en Settings →
       # Secrets and variables → Actions). Si no están, se compila igual que antes.
@@ -107,8 +114,8 @@ jobs:
       - name: Publicar como Release de GitHub
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref == 'refs/heads/main' && format('build-{0}', github.run_number) || format('prueba-{0}', github.run_number) }}
-          name: ${{ github.ref == 'refs/heads/main' && format('Prevenglobal APK — compilación #{0}', github.run_number) || format('PRUEBA Prevenglobal APK — compilación #{0}', github.run_number) }}
+          tag_name: ${{ env.ETIQUETA }}
+          name: ${{ env.TITULO }}
           target_commitish: ${{ github.sha }}
           prerelease: ${{ github.ref != 'refs/heads/main' }}
           make_latest: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
