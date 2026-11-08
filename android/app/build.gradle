@@ -37,14 +37,9 @@ android {
         debug {
             if (hayFirma) signingConfig signingConfigs.prevenglobal
         }
-        // Versión optimizada (la que se publica): R8 quita el código que no se
-        // usa y la app pesa mucho menos (se descarga más rápido al actualizar).
-        // Lleva la MISMA firma fija, así se instala encima de la anterior.
         release {
-            if (hayFirma) signingConfig signingConfigs.prevenglobal
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }

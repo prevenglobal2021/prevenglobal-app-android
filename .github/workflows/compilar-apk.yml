@@ -79,19 +79,12 @@ jobs:
             echo "::warning::Sin firma fija (falta el secreto FIRMA_APP): esta versión no se podrá instalar encima de otra."
           fi
 
-      # Con la firma fija se compila la versión optimizada (release, más
-      # liviana). Sin firma se compila la de prueba (debug) como antes.
-      - name: Compilar el APK
+      - name: Compilar el APK (versión de instalación directa)
         env:
           FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
         run: |
-          if [ -n "$FIRMA_ARCHIVO" ]; then
-            (cd android && ./gradlew assembleRelease)
-            echo "APK_SALIDA=android/app/build/outputs/apk/release/app-release.apk" >> $GITHUB_ENV
-          else
-            (cd android && ./gradlew assembleDebug)
-            echo "APK_SALIDA=android/app/build/outputs/apk/debug/app-debug.apk" >> $GITHUB_ENV
-          fi
+          (cd android && ./gradlew assembleDebug)
+          echo "APK_SALIDA=android/app/build/outputs/apk/debug/app-debug.apk" >> $GITHUB_ENV
 
       - name: Revisar el APK
         run: ls -la "$APK_SALIDA"
