@@ -86,6 +86,11 @@
         </intent>
     </queries>
 
+    <!-- Actualizar la app desde adentro: baja el APK nuevo y abre el
+         instalador de Android directamente (sin pasar por Chrome).
+         Android pregunta UNA vez si se permite instalar desde Prevenglobal. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />

@@ -72,28 +72,46 @@ jobs:
             echo "::warning::Sin firma fija (falta el secreto FIRMA_APP): esta versión no se podrá instalar encima de otra."
           fi
 
-      - name: Compilar el APK (versión de instalación directa)
+      # Con la firma fija se compila la versión optimizada (release, más
+      # liviana). Sin firma se compila la de prueba (debug) como antes.
+      - name: Compilar el APK
         env:
           FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
-        run: cd android && ./gradlew assembleDebug
+        run: |
+          if [ -n "$FIRMA_ARCHIVO" ]; then
+            (cd android && ./gradlew assembleRelease)
+            echo "APK_SALIDA=android/app/build/outputs/apk/release/app-release.apk" >> $GITHUB_ENV
+          else
+            (cd android && ./gradlew assembleDebug)
+            echo "APK_SALIDA=android/app/build/outputs/apk/debug/app-debug.apk" >> $GITHUB_ENV
+          fi
+
+      - name: Revisar el APK
+        run: ls -la "$APK_SALIDA"
 
       - name: Dejar el APK disponible para descargar (artefacto del run)
         uses: actions/upload-artifact@v4
         with:
           name: prevenglobal-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ env.APK_SALIDA }}
 
       # Además del artefacto (que expira con el tiempo), esto crea un
       # "Release" con el .apk adjunto — un enlace fijo y permanente que
       # se puede compartir directamente con los técnicos.
-      - name: Renombrar el APK con la fecha de esta compilación
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk prevenglobal-${{ github.run_number }}.apk
+      - name: Renombrar el APK con el número de esta compilación
+        run: cp "$APK_SALIDA" prevenglobal-${{ github.run_number }}.apk
 
+      # Desde main: versión oficial (la plataforma avisa a todos).
+      # Desde otra rama: versión de PRUEBA ("pre-release"): no le llega a
+      # nadie, porque la plataforma solo mira la última versión oficial.
       - name: Publicar como Release de GitHub
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: build-${{ github.run_number }}
-          name: Prevenglobal APK — compilación #${{ github.run_number }}
+          tag_name: ${{ github.ref == 'refs/heads/main' && format('build-{0}', github.run_number) || format('prueba-{0}', github.run_number) }}
+          name: ${{ github.ref == 'refs/heads/main' && format('Prevenglobal APK — compilación #{0}', github.run_number) || format('PRUEBA Prevenglobal APK — compilación #{0}', github.run_number) }}
+          target_commitish: ${{ github.sha }}
+          prerelease: ${{ github.ref != 'refs/heads/main' }}
+          make_latest: ${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}
           # La plataforma lee esta línea para avisar en la app que hay versión nueva.
           body: "versionCode=${{ env.VERSION_CODE }} versionName=${{ env.VERSION_NAME }}"
           files: prevenglobal-${{ github.run_number }}.apk
