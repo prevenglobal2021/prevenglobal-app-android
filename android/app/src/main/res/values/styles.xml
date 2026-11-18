@@ -22,13 +22,15 @@
     </style>
 
     <!-- Pantalla de inicio. Android 12+ usa los tres "windowSplashScreen…"
-         (logo en círculo blanco sobre azul); los anteriores usan la imagen
+         (logo en círculo blanco sobre azul, drawable/splash_icono.png); los anteriores usan la imagen
          drawable/splash.png. -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
         <item name="windowSplashScreenBackground">@color/splashFondo</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/splashCirculoLogo</item>
+        <!-- Logo propio en alta resolución (círculo blanco ya dibujado, al tamaño
+             máximo que Android permite). Antes usaba el ícono del lanzador de 432 px,
+             que Android agrandaba y se veía borroso y con borde serrucho. -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icono</item>
         <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
     </style>
 </resources>

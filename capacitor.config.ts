@@ -31,7 +31,7 @@ const config: CapacitorConfig = {
   plugins: {
     // Pantalla de inicio con el logo mientras abre la plataforma.
     SplashScreen: {
-      launchShowDuration: 1800,
+      launchShowDuration: 900,
       launchAutoHide: true,
       launchFadeOutDuration: 300,
       backgroundColor: AZUL_MARINO,
