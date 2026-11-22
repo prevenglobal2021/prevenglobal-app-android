@@ -32,3 +32,7 @@ sueltos cada vez que haga falta).
    vea actualizado en el celular — un logo nuevo sí requiere esto, a
    diferencia de la mayoría de cambios de la plataforma, que se ven solos
    sin recompilar nada.
+
+## Novedades
+
+- 2026-11-22: versión nueva pedida por Pedro para acompañar la pantalla nueva de "Reportar avance" de Proyectos (pasos, botón Guardar siempre visible, botones encuadrados con Letra grande). La pantalla viene de prevenglobal.com; esta compilación hace que a todos los celulares les salga el aviso de actualizar.
