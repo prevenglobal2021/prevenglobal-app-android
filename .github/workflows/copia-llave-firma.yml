@@ -4,7 +4,7 @@ name: Copia cifrada de la llave de firma (una sola vez)
 # contraseña del respaldo de Pedro (secreto RESPALDO_CLAVE), para guardarla en OneDrive.
 # Solo corre en esta rama (nunca en main, así no compila ni publica la app).
 # El archivo que deja está cifrado con AES256: sin la contraseña no sirve de nada.
-# Dura 1 día. Después se borra este archivo y el secreto RESPALDO_CLAVE.
+# Dura 1 día. Después se borra este archivo y el secreto RESPALDO_CLAVE. (relanzado tras crear RESPALDO_CLAVE)
 on:
   push:
     branches: [ claude/project-thread-v0thio ]
