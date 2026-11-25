@@ -1,0 +1,48 @@
+name: Copia cifrada de la llave de firma (una sola vez)
+
+# Saca la llave de firma de la app (secretos FIRMA_APP y FIRMA_CLAVE) CIFRADA con la
+# contraseña del respaldo de Pedro (secreto RESPALDO_CLAVE), para guardarla en OneDrive.
+# Solo corre en esta rama (nunca en main, así no compila ni publica la app).
+# El archivo que deja está cifrado con AES256: sin la contraseña no sirve de nada.
+# Dura 1 día. Después se borra este archivo y el secreto RESPALDO_CLAVE. (3.er intento, frase larga)
+on:
+  push:
+    branches: [ claude/project-thread-v0thio ]
+    paths: [ .github/workflows/copia-llave-firma.yml ]
+
+permissions:
+  contents: read
+
+jobs:
+  copia:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cifrar la llave con la contraseña del respaldo
+        env:
+          FIRMA_APP: ${{ secrets.FIRMA_APP }}
+          FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
+          RESPALDO_CLAVE: ${{ secrets.RESPALDO_CLAVE }}
+        run: |
+          set -euo pipefail
+          [ -n "$FIRMA_APP" ] && [ -n "$FIRMA_CLAVE" ] || { echo "::error::Faltan los secretos FIRMA_APP o FIRMA_CLAVE"; exit 1; }
+          [ "${#RESPALDO_CLAVE}" -ge 16 ] || { echo "::error::Falta el secreto RESPALDO_CLAVE (o tiene menos de 16 caracteres). No se sacó nada."; exit 1; }
+          umask 077
+          D="$RUNNER_TEMP/llave"; mkdir -p "$D" "$RUNNER_TEMP/salida"
+          echo "$FIRMA_APP" | base64 -d > "$D/firma.keystore"
+          printf '%s\n' "$FIRMA_CLAVE" > "$D/clave-de-la-firma.txt"
+          printf 'Llave de firma de la app Prevenglobal (secretos FIRMA_APP en base64 y FIRMA_CLAVE en GitHub).\nPara volver a usarla: GitHub > prevenglobal-app-android > Settings > Secrets > Actions:\n  FIRMA_APP  = base64 -w0 firma.keystore\n  FIRMA_CLAVE = contenido de clave-de-la-firma.txt\n' > "$D/LEEME.txt"
+          [ "$(stat -c %s "$D/firma.keystore")" -gt 500 ] || { echo "::error::La llave salió vacía"; exit 1; }
+          F="$RUNNER_TEMP/salida/llave-firma-app-$(date +%F).tar.gz.gpg"
+          tar czf - -C "$D" . | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 3 --symmetric --cipher-algo AES256 -o "$F" 3<<<"$RESPALDO_CLAVE"
+          N=$(gpg --batch --pinentry-mode loopback --passphrase-fd 3 -d "$F" 3<<<"$RESPALDO_CLAVE" 2>/dev/null | tar tzf - | wc -l)
+          [ "$N" -ge 3 ] || { echo "::error::La copia cifrada no abre"; exit 1; }
+          rm -rf "$D"
+          echo "Copia cifrada lista y comprobada ($N archivos adentro)."
+
+      - name: Dejarla para descargar (1 día, cifrada)
+        uses: actions/upload-artifact@v4
+        with:
+          name: llave-firma-app-cifrada
+          path: ${{ runner.temp }}/salida/
+          retention-days: 1
+          if-no-files-found: error
